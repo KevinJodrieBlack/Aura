@@ -13,6 +13,11 @@ public:
 	AAuraCharacterBase();
 
 protected:
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	TObjectPtr<USkeletalMeshComponent> Weapon;
+
+protected:
 	virtual void BeginPlay() override;
 
 };
