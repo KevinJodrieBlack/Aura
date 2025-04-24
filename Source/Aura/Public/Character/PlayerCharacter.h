@@ -14,6 +14,15 @@ class AURA_API APlayerCharacter : public AAuraCharacterBase
 public:
 	APlayerCharacter();
 
+public:
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
 protected:
 	virtual void BeginPlay() override;
+
+private:
+
+	void SetASCActorInfoFromPlayerState();
 };
