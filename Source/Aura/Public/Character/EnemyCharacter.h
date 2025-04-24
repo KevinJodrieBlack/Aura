@@ -19,6 +19,8 @@ protected:
 	
 public:
 
+	AEnemyCharacter();
+
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
 	
