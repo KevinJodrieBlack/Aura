@@ -42,8 +42,10 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
+//Gets ASC and AS reference from Player State
 void APlayerCharacter::SetASCActorInfoFromPlayerState()
 {
+	
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 
 	check(AuraPlayerState);
