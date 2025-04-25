@@ -17,6 +17,8 @@ void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!IsLocalController()) return;
+
 	check(MovementMappingContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
