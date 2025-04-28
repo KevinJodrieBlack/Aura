@@ -5,7 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/AuraHUD.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -34,6 +36,7 @@ void APlayerCharacter::OnRep_PlayerState()
 
 	//Set Attribute set and ASC for client
 	SetASCActorInfoFromPlayerState();
+	
 }
 
 void APlayerCharacter::BeginPlay()
@@ -45,7 +48,6 @@ void APlayerCharacter::BeginPlay()
 //Gets ASC and AS reference from Player State
 void APlayerCharacter::SetASCActorInfoFromPlayerState()
 {
-	
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 
 	check(AuraPlayerState);
@@ -54,5 +56,13 @@ void APlayerCharacter::SetASCActorInfoFromPlayerState()
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
+
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
+	{
+		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+		{
+			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }
 

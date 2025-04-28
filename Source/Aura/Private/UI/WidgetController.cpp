@@ -2,3 +2,21 @@
 
 
 #include "UI/WidgetController.h"
+
+void UWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& WidgetControllerParams)
+{
+	PlayerState = WidgetControllerParams.PlayerState;
+	PlayerController = WidgetControllerParams.PlayerController;
+	AbilitySystemComponent = WidgetControllerParams.AbilitySystemComponent;
+	AttributeSet = WidgetControllerParams.AttributeSet;
+}
+
+void UWidgetController::BroadcastInitialValues()
+{
+	
+}
+
+void UWidgetController::BindCallbacksToDependencies()
+{
+	
+}
