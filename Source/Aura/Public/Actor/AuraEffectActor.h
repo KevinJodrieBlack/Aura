@@ -18,29 +18,13 @@ public:
 	
 	AAuraEffectActor();
 
-private:
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USphereComponent> Sphere;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> Mesh;
-
 protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> EffectToApply;
 
-public:
+protected:
 
-	virtual void BeginPlay() override;
-
-private:
-
-	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION(BlueprintCallable)
+	void TryApplyGameplayEffectToActor(AActor* Actor, bool& bWasApplied);
 };

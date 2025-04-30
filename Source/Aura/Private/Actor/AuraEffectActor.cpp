@@ -3,53 +3,35 @@
 
 #include "Actor/AuraEffectActor.h"
 
-#include "AbilitySystemGlobals.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
-#include "AbilitySystem/AuraAttributeSet.h"
-#include "Components/SphereComponent.h"
+#include "GameplayEffect.h"
 
 AAuraEffectActor::AAuraEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
-
-	SetRootComponent(Mesh);
-	Sphere->SetupAttachment(Mesh);
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>("Root"));
 }
 
-void AAuraEffectActor::BeginPlay()
+void AAuraEffectActor::TryApplyGameplayEffectToActor(AActor* Actor, bool& bWasApplied)
 {
-	Super::BeginPlay();
-
-	if (!HasAuthority()) return;
+	bWasApplied = false;
 	
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraEffectActor::OnOverlap);
-	Sphere->OnComponentEndOverlap.AddDynamic(this, &AAuraEffectActor::OnEndOverlap);
-}
-
-void AAuraEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
 	if (!IsValid(EffectToApply))
 	{
+		UE_LOG(LogTemp, Fatal, TEXT("You forgot to put an effect to apply on %s you fucking retard"), *GetName())
 		return;
 	}
-	
-	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s has triggered effect actor"), *OtherActor->GetName())
 
-		const FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+	if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor))
+	{
+		FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+		ContextHandle.AddSourceObject(this);
 		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(EffectToApply, 1, ContextHandle);
 		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		bWasApplied = true;
 	}
-}
-
-void AAuraEffectActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	
 }
 
