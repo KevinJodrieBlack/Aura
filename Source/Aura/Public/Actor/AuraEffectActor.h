@@ -9,6 +9,21 @@
 class UGameplayEffect;
 class USphereComponent;
 
+UENUM(BlueprintType)
+enum class EEffectApplicationPolicy
+{
+	ApplyOnOverlap,
+	ApplyOnEndOverlap,
+	DoNotApply
+};
+
+UENUM(BlueprintType)
+enum class EEffectRemovalPolicy
+{
+	RemoveOnEndOverlap,
+	DoNotRemove
+};
+
 UCLASS()
 class AURA_API AAuraEffectActor : public AActor
 {
@@ -21,16 +36,45 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> InstantEffect;
+	bool bIsDestroyedOnOverlap = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DurationEffect;
+	TArray<TSubclassOf<UGameplayEffect>> InstantEffects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> InfiniteEffect;
+	EEffectApplicationPolicy InstantEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TSubclassOf<UGameplayEffect>> DurationEffects;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EEffectApplicationPolicy DurationEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TSubclassOf<UGameplayEffect>> InfiniteEffects;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EEffectApplicationPolicy InfiniteEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EEffectRemovalPolicy InfiniteEffectRemovalPolicy = EEffectRemovalPolicy::RemoveOnEndOverlap;
+
+private:
+
+	UPROPERTY()
+	TArray<AActor*> AffectedActors;
 
 protected:
 
 	UFUNCTION(BlueprintCallable)
-	void TryApplyGameplayEffectToActor(AActor* Actor, TSubclassOf<UGameplayEffect> Effect, bool& bWasApplied);
+	void TryApplyGameplayEffectToActor(AActor* Actor, TSubclassOf<UGameplayEffect> Effect);
+
+	UFUNCTION()
+	void TryRemoveInfiniteEffect(AActor* Actor, TSubclassOf<UGameplayEffect> Effect);
+
+	UFUNCTION(BlueprintCallable)
+	void OnOverlap(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable)
+	void OnEndOverlap(AActor* Actor);
 };
