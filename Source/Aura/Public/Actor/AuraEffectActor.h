@@ -20,11 +20,17 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> EffectToApply;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> InstantEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DurationEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> InfiniteEffect;
 
 protected:
 
 	UFUNCTION(BlueprintCallable)
-	void TryApplyGameplayEffectToActor(AActor* Actor, bool& bWasApplied);
+	void TryApplyGameplayEffectToActor(AActor* Actor, TSubclassOf<UGameplayEffect> Effect, bool& bWasApplied);
 };
