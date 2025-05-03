@@ -35,6 +35,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere)
+	float EffectLevel = 1.f;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsDestroyedOnOverlap = false;
 

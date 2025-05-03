@@ -2,6 +2,9 @@
 
 
 #include "AbilitySystem/AuraAttributeSet.h"
+
+#include "GameplayEffectExtension.h"
+#include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -23,6 +26,61 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 }
 
+void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0, GetMaxHealth());
+	}
+	else if (Attribute == GetManaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0, GetMaxMana());
+	}
+}
+
+void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& EffectProps)
+{
+	EffectProps.ContextHandle = Data.EffectSpec.GetContext();
+	
+	EffectProps.SourceASC = EffectProps.ContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+
+	if (IsValid(EffectProps.SourceASC) && EffectProps.SourceASC->AbilityActorInfo.IsValid() && EffectProps.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
+	{
+		EffectProps.SourceAvatarActor = EffectProps.SourceASC->AbilityActorInfo->AvatarActor.Get();
+		EffectProps.SourceController = EffectProps.SourceASC->AbilityActorInfo->PlayerController.Get();
+
+		if (EffectProps.SourceController == nullptr && EffectProps.SourceAvatarActor != nullptr)
+		{
+			if (const APawn* Pawn = Cast<APawn>(EffectProps.SourceAvatarActor))
+			{
+				EffectProps.SourceController = Pawn->GetController();
+			}
+		}
+		if (EffectProps.SourceController)
+		{
+			EffectProps.SourceCharacter = Cast<ACharacter>(EffectProps.SourceController->GetPawn());
+		}
+	}
+
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		EffectProps.TargetAvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		EffectProps.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
+		EffectProps.TargetCharacter = Cast<ACharacter>(EffectProps.TargetController->GetPawn());
+		EffectProps.TargetASC = Data.Target.AbilityActorInfo->AbilitySystemComponent.Get();
+	}
+}
+
+void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+
+	FEffectProperties EffectProps;
+	SetEffectProperties(Data, EffectProps);
+}
+
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Health, OldHealth);
@@ -42,3 +100,5 @@ void UAuraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) 
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
 }
+
+

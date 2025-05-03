@@ -4,6 +4,7 @@
 #include "Character/PlayerCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
@@ -27,7 +28,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	//Set Attribute set and ASC refs on server
-	SetASCActorInfoFromPlayerState();
+	InitAbilityActorInfo();
 }
 
 void APlayerCharacter::OnRep_PlayerState()
@@ -35,7 +36,7 @@ void APlayerCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	//Set Attribute set and ASC for client
-	SetASCActorInfoFromPlayerState();
+	InitAbilityActorInfo();
 	
 }
 
@@ -46,7 +47,7 @@ void APlayerCharacter::BeginPlay()
 }
 
 //Gets ASC and AS reference from Player State
-void APlayerCharacter::SetASCActorInfoFromPlayerState()
+void APlayerCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 
@@ -56,6 +57,8 @@ void APlayerCharacter::SetASCActorInfoFromPlayerState()
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
+
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
