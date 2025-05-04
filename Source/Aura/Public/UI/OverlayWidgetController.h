@@ -6,6 +6,26 @@
 #include "WidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+class UAuraUserWidget;
+
+USTRUCT(BlueprintType)
+struct FUIWidgetRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag MessageTag = FGameplayTag();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText MessageText = FText();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UAuraUserWidget> MessageWidget = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UTexture2D> Image = nullptr;
+};
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
@@ -31,13 +51,22 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnMaxManaChangedSignature OnMaxManaChanged;
 
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
 public:
+
+	virtual void BroadcastInitialValues() override;
+	virtual void BindCallbacksToDependencies() override;
+
+protected:
 	
 	void HealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void MaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void ManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void MaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	
-	virtual void BroadcastInitialValues() override;
-	virtual void BindCallbacksToDependencies() override;
+	
 };
