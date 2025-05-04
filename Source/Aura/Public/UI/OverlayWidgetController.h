@@ -32,6 +32,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature, float, NewMana);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature, float, NewMaxMana);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageRowWidgetSignature, FUIWidgetRow, Row);
+
 UCLASS(Blueprintable, BlueprintType)
 class AURA_API UOverlayWidgetController : public UWidgetController
 {
@@ -51,6 +53,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnMaxManaChangedSignature OnMaxManaChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FMessageRowWidgetSignature MessageWidgetRowDelegate;
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -67,6 +72,15 @@ protected:
 	void MaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void ManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void MaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
+
+	template<typename T>
+	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
 	
 	
 };
+
+template <typename T>
+T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
+{
+	return DataTable->FindRow<T>(Tag.GetTagName(), TEXT(""));
+}

@@ -24,12 +24,23 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
 	
-	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AssetTags.AddLambda([] (const FGameplayTagContainer& TagContainer)
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AssetTags.AddLambda([this] (const FGameplayTagContainer& TagContainer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Effect Applied"))
 		for (const FGameplayTag& Tag : TagContainer)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, FString::Printf(TEXT("Effect Tag: %s"), *Tag.ToString()));
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Message"))))
+			{
+				FUIWidgetRow* WidgetRow = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+
+				if (!WidgetRow)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Can't find message data row for %s"), *Tag.ToString())
+					return;
+				}
+				
+				MessageWidgetRowDelegate.Broadcast(*WidgetRow);
+			}
 		}
 	});
 }
