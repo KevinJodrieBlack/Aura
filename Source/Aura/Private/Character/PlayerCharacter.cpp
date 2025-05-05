@@ -29,6 +29,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 
 	//Set Attribute set and ASC refs on server
 	InitAbilityActorInfo();
+	InitPrimaryAttributes();
 }
 
 void APlayerCharacter::OnRep_PlayerState()

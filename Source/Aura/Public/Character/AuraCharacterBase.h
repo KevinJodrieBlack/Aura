@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "AuraCharacterBase.generated.h"
 
+class UGameplayEffect;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -27,14 +28,18 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category= Attributes)
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+	UPROPERTY(EditDefaultsOnly, Category=Attributes)
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
 public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const; 
 	
 protected:
+	
 	virtual void BeginPlay() override;
-
 	virtual void InitAbilityActorInfo();
+	void InitPrimaryAttributes() const;
 
 };

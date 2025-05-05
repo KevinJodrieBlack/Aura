@@ -23,7 +23,7 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadWrite, Category = AbilitySystem)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = AbilitySystem)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(BlueprintReadWrite, Category= Attributes)
