@@ -1,6 +1,7 @@
 #include "Aura/Public/Character/AuraCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "UObject/FastReferenceCollector.h"
 
 
 AAuraCharacterBase::AAuraCharacterBase()
@@ -40,7 +41,8 @@ void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect> At
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	checkf(ASC, TEXT("Missing ability system component for %s"), *GetName());
 	
-	const FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+	FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+	ContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Attributes, Level, ContextHandle);
 	ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), ASC);
 }
