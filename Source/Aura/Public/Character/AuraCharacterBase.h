@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category=Attributes)
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
+	UPROPERTY(EditDefaultsOnly, Category=Attributes)
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
 public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -40,6 +43,7 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo();
-	void InitPrimaryAttributes() const;
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Attributes, float Level) const;
+	void InitializeAttributes() const;
 
 };

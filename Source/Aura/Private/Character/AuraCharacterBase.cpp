@@ -33,17 +33,21 @@ void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }
 
-void AAuraCharacterBase::InitPrimaryAttributes() const
+void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect> Attributes, const float Level) const
 {
-	checkf(DefaultPrimaryAttributes, TEXT("Missing primary attribute effect for %s"), *GetName());
-	checkf(GetAbilitySystemComponent(), TEXT("Missing ability system component for %s"), *GetName());
+	checkf(Attributes, TEXT("Trying to apply null effect to %s"), *GetName());
 	
-	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
-	{
-		const FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(DefaultPrimaryAttributes, 1, ContextHandle);
-		ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), ASC);
-	}
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	checkf(ASC, TEXT("Missing ability system component for %s"), *GetName());
 	
+	const FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(Attributes, Level, ContextHandle);
+	ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), ASC);
+}
+
+void AAuraCharacterBase::InitializeAttributes() const
+{
+	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
+	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
 }
 

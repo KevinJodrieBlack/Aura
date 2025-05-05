@@ -29,7 +29,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 
 	//Set Attribute set and ASC refs on server
 	InitAbilityActorInfo();
-	InitPrimaryAttributes();
+	InitializeAttributes();
 }
 
 void APlayerCharacter::OnRep_PlayerState()
@@ -38,13 +38,7 @@ void APlayerCharacter::OnRep_PlayerState()
 
 	//Set Attribute set and ASC for client
 	InitAbilityActorInfo();
-	
-}
-
-void APlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
+	InitializeAttributes();
 }
 
 //Gets ASC and AS reference from Player State
