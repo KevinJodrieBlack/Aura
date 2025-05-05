@@ -29,8 +29,20 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category= Attributes)
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+private:
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
+	int32 Level = 1;
+
 public:
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const;
+	FORCEINLINE int32 GetPlayerLevel() const {return Level;}
+
+private:
+
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
 };

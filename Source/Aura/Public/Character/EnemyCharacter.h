@@ -16,6 +16,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsHighlighted = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 Level = 1;
 	
 public:
 
@@ -25,6 +28,10 @@ public:
 	virtual void UnHighlightActor() override;
 
 	virtual void BeginPlay() override;
+
+	//Combat interface
+	virtual int32 GetPlayerLevel() override;
+	//End combat interface
 
 protected:
 

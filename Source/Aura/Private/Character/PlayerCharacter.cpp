@@ -41,6 +41,15 @@ void APlayerCharacter::OnRep_PlayerState()
 	InitializeAttributes();
 }
 
+int32 APlayerCharacter::GetPlayerLevel()
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+
+	check(AuraPlayerState);
+	
+	return AuraPlayerState->GetPlayerLevel();
+}
+
 //Gets ASC and AS reference from Player State
 void APlayerCharacter::InitAbilityActorInfo()
 {
