@@ -27,10 +27,7 @@ struct FUIWidgetRow : public FTableRowBase
 };
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature, float, NewMana);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature, float, NewMaxMana);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChanged, float, NewValue);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageRowWidgetSignature, FUIWidgetRow, Row);
 
@@ -42,16 +39,16 @@ class AURA_API UOverlayWidgetController : public UWidgetController
 public:
 
 	UPROPERTY(BlueprintAssignable)
-	FOnHealthChangedSignature OnHealthChanged;
+	FOnAttributeChanged OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnMaxHealthChangedSignature OnMaxHealthChanged;
+	FOnAttributeChanged OnMaxHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnManaChangedSignature OnManaChanged;
+	FOnAttributeChanged OnManaChanged;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnMaxManaChangedSignature OnMaxManaChanged;
+	FOnAttributeChanged OnMaxManaChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FMessageRowWidgetSignature MessageWidgetRowDelegate;
@@ -67,11 +64,6 @@ public:
 	virtual void BindCallbacksToDependencies() override;
 
 protected:
-	
-	void HealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
-	void MaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
-	void ManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
-	void MaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);

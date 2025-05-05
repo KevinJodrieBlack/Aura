@@ -19,10 +19,30 @@ void UOverlayWidgetController::BroadcastInitialValues()
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	const UAuraAttributeSet* AuraAttributeSet = Cast<UAuraAttributeSet>(AttributeSet);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddUObject(this, &UOverlayWidgetController::HealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetManaAttribute()).AddUObject(this, &UOverlayWidgetController::ManaChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxManaAttribute()).AddUObject(this, &UOverlayWidgetController::MaxManaChanged);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute())
+		.AddLambda([this] (const FOnAttributeChangeData& OnAttributeChangeData)
+	{
+		OnHealthChanged.Broadcast(OnAttributeChangeData.NewValue);
+	});
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute())
+		.AddLambda([this] (const FOnAttributeChangeData& OnAttributeChangeData)
+	{
+		OnMaxHealthChanged.Broadcast(OnAttributeChangeData.NewValue);
+	});
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetManaAttribute())
+		.AddLambda([this] (const FOnAttributeChangeData& OnAttributeChangeData)
+	{
+		OnManaChanged.Broadcast(OnAttributeChangeData.NewValue);
+	});
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxManaAttribute())
+		.AddLambda([this] (const FOnAttributeChangeData& OnAttributeChangeData)
+	{
+		OnMaxManaChanged.Broadcast(OnAttributeChangeData.NewValue);
+	});
 	
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AssetTags.AddLambda([this] (const FGameplayTagContainer& TagContainer)
 	{
@@ -43,24 +63,4 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		}
 	});
-}
-
-void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const
-{
-	OnHealthChanged.Broadcast(OnAttributeChangeData.NewValue);
-}
-
-void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const
-{
-	OnMaxHealthChanged.Broadcast(OnAttributeChangeData.NewValue);
-}
-
-void UOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const
-{
-	OnManaChanged.Broadcast(OnAttributeChangeData.NewValue);
-}
-
-void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& OnAttributeChangeData) const
-{
-	OnMaxManaChanged.Broadcast(OnAttributeChangeData.NewValue);
 }
