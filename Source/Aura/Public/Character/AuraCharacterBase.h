@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category=Attributes)
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
+	UPROPERTY(EditDefaultsOnly, Category=Attributes)
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
 public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
